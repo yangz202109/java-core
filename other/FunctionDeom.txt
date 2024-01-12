@@ -1,0 +1,28 @@
+/*导出TXT文件*/
+@GetMapping("/output")
+public void output(HttpServletResponse response) throws IOException {
+       //设置响应头
+       response.setContentType("multipart/form-data");
+       response.setCharacterEncoding("utf-8");
+       String fileName = URLEncoder.encode("area", "UTF-8");
+       response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".txt");
+
+       ServletOutputStream outputStream = response.getOutputStream();
+       BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+       List<TabSysArea> areaList = areaService.queryAll();
+       StringBuilder data = new StringBuilder();
+       for (TabSysArea area : areaList) {
+            data.append(area.getAreaCode()).append(" ").append(area.getAreaName()).append("\r\n");
+        }
+       
+    try {
+            /*写入流*/
+            bos.write(data.toString().getBytes());
+            bos.flush();
+         } finally {
+            /*关闭流*/
+            bos.close();
+            outputStream.close();
+        }
+}
+  
